@@ -22,7 +22,6 @@ class GHFlutter extends StatefulWidget {
 
 class GHFlutterState extends State<GHFlutter> {
   var _users = [];
-  final _biggerFont = const TextStyle(fontSize: 18.0);
   void initState() {
     super.initState();
     _loadData();
@@ -36,12 +35,31 @@ class GHFlutterState extends State<GHFlutter> {
         centerTitle: true,
         backgroundColor: Colors.indigo.shade700,
       ),
-      body: Text(Strings.appTitle),
+      body: ListView.separated(
+          separatorBuilder: (BuildContext context, int index) => Divider(
+                color: Colors.grey.shade500,
+              ),
+          itemCount: _users.length,
+          itemBuilder: (BuildContext context, int index) {
+            return _buildRow(index);
+          }),
+    );
+  }
+
+  Widget _buildRow(int i) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListTile(
+        title: Text(
+          '${_users[i]['login']}',
+          style: const TextStyle(fontSize: 18.0),
+        ),
+      ),
     );
   }
 
   _loadData() async {
-    String dataURL = 'https://api.github.com/orgs/github/public_members';
+    String dataURL = Strings.apiEndPoint;
     http.Response response = await http.get(dataURL);
     setState(() {
       _users = json.decode(response.body);
